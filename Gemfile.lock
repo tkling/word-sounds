@@ -1,11 +1,23 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    PriorityQueue (0.1.2)
     alsa-rawmidi (0.2.14)
       ffi (>= 1.0)
+    diamond (0.4.2)
+      diamond-engine (>= 0.3.0)
+      osc-access (>= 0.0.5)
+    diamond-engine (0.3.2)
+      midi-eye (>= 0.1.3)
+      midi-message (>= 0.3.1)
+      midi-topaz (>= 0.0.15)
+      unimidi (>= 0.2.5)
+    eventmachine (1.0.3)
     ffi (1.9.3)
     ffi-coremidi (0.2.0)
       ffi (>= 1.0)
+    gamelan (0.3)
+      PriorityQueue (>= 0.1.2)
     micromidi (0.0.9)
       midi-eye (>= 0.1.3)
       midi-message (>= 0.2.2)
@@ -18,9 +30,18 @@ GEM
     midi-message (0.3.2)
     midi-nibbler (0.1.1)
       midi-message
+    midi-topaz (0.0.15)
+      gamelan
+      midi-eye (>= 0.0.7)
+      midi-message (>= 0.0.4)
+      unimidi (>= 0.1.10)
     midi-winmm (0.1.10)
       ffi (>= 1.0)
     midilib (2.0.4)
+    osc-access (0.0.15)
+      eventmachine
+      osc-ruby
+    osc-ruby (1.1.0)
     roscil (1.0.0)
     unimidi (0.3.5)
       alsa-rawmidi (~> 0)
@@ -32,6 +53,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  diamond
   micromidi
   midilib
   roscil

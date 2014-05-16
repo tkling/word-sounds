@@ -18,15 +18,16 @@ module WordSounds
           { :word => word, :sound => sound }
         end
 
-        scale = 1..4.map do |num|
+        octaved_sounds = (1..4).map { |num| sounds.map { |sound| "#{sound}#{num}" } }.flatten
+        scale = (1..4).map do |num|
           ["C#{num}", "D#{num}", "E#{num}", "F#{num}", "G#{num}", "A#{num}", "B#{num}", "C#{num + 1}"]
         end.flatten
 
-        whoa = sounds.zip(scale).to_h
+        whoa = octaved_sounds.zip(scale).to_h
         durations = [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 2.0, 2.5, 5.0]
 
         words_and_sounds.each do |word_sound|
-          play(whoa[word_sound[:sound]], durations[rand(9)])
+          play(whoa[word_sound["sound#{rand(3)}".to_sym]], durations[rand(9)])
         end
       end
     end
