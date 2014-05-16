@@ -51,9 +51,7 @@ module WordSounds
 
     def find_first(word, sounds, octaved_sounds)
       value = :unset
-      sounds.each do |s|
-        (value = s; break) if word.downcase.include?(s)
-      end
+      sounds.each { |s| (value = s; break) if word.downcase.include?(s) }
       value = value + (rand($max_octave - 1) + 1).to_s if value =~ /\A[a-z]{2}\Z/
       value = octaved_sounds[rand($total_notes - 1)]   if value == :unset
       value
