@@ -7,6 +7,7 @@ module WordSounds
       $output = UniMIDI::Output.gets
       MIDI.using($output) do
         sounds = %w(do re me fa so la ti da)
+        octaved_sounds = (1..4).map { |num| sounds.map { |sound| "#{sound}#{num}".to_sym } }.flatten
 
         # break sentence into words
         broken = sentence.split(' ')
@@ -14,11 +15,10 @@ module WordSounds
         # for each word, find the word sound
         words_and_sounds = broken.map do |word|
           sound = WordSounds.find_first(word, sounds)
-          sound = sounds[rand(31)] if sound == :unset
+          sound = octaved_sounds[rand(31)] if sound == :unset
           { :word => word, :sound => sound }
         end
 
-        octaved_sounds = (1..4).map { |num| sounds.map { |sound| "#{sound}#{num}" } }.flatten
         scale = (1..4).map do |num|
           ["C#{num}", "D#{num}", "E#{num}", "F#{num}", "G#{num}", "A#{num}", "B#{num}", "C#{num + 1}"]
         end.flatten
@@ -27,7 +27,7 @@ module WordSounds
         durations = [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 2.0, 2.5, 5.0]
 
         words_and_sounds.each do |word_sound|
-          play(whoa[word_sound["sound#{rand(3)}".to_sym]], durations[rand(9)])
+          play(whoa[word_sound[:sound]], durations[rand(9)])
         end
       end
     end
