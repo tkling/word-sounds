@@ -5,41 +5,57 @@ module WordSounds
 
     def soundify(sentence)
       $output = UniMIDI::Output.gets
+      puts ''
       MIDI.using($output) do
         sounds = %w(do re me fa so la ti da)
-        octaved_sounds = (1..4).map { |num| sounds.map { |sound| "#{sound}#{num}".to_sym } }.flatten
+        octaved_sounds = (1..4).map { |num| sounds.map { |sound| "#{sound}#{num}" } }.flatten
 
         # break sentence into words
         broken = sentence.split(' ')
 
+        # housekeeping
+        min_octave = 1
+        $max_octave = 4
+        notes_per_octave = 7
+        total_octaves = $max_octave - min_octave + 1
+
+        # extra +1 is to account for final high note => #{root note of scale}#{max_octave + 1}
+        # self.find_first wants $total_notes, that's why this is here.
+        # All of this stuff is gross and needs to change later!
+        $total_notes = total_octaves * notes_per_octave + 1
+
         # for each word, find the word sound
         words_and_sounds = broken.map do |word|
-          sound = WordSounds.find_first(word, sounds)
-          sound = octaved_sounds[rand(31)] if sound == :unset
-          { :word => word, :sound => sound }
+          { :word => word, :sound => WordSounds.find_first(word, sounds, octaved_sounds) }
         end
 
-        scale = (1..4).map do |num|
-          ["C#{num}", "D#{num}", "E#{num}", "F#{num}", "G#{num}", "A#{num}", "B#{num}", "C#{num + 1}"]
-        end.flatten
+        scale = (min_octave..$max_octave).map do |num|
+          ["C#{num}", "D#{num}", "E#{num}", "F#{num}", "G#{num}", "A#{num}", "B#{num}"]
+        end.flatten.push("C#{$max_octave + 1}")
 
         whoa = octaved_sounds.zip(scale).to_h
-        durations = [0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.3, 2.0, 2.5, 5.0]
+        possible_durations = [0.3, 0.7, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4, 2.7, 3.2]
+        observed_duration = 0.0
 
         words_and_sounds.each do |word_sound|
-          play(whoa[word_sound[:sound]], durations[rand(9)])
+          note = whoa[word_sound[:sound]]
+          duration = possible_durations[rand(9)]
+          puts "note: #{note}, duration: #{duration}"
+          observed_duration += duration
+          play(note, duration)
         end
+
+        puts "Hooray! Total duration was #{observed_duration} seconds."
       end
     end
 
-    def find_first(word, sounds)
+    def find_first(word, sounds, octaved_sounds)
       value = :unset
       sounds.each do |s|
-        if word.downcase.include?(s)
-          value = s
-          break
-        end
+        (value = s; break) if word.downcase.include?(s)
       end
+      value = value + (rand($max_octave - 1) + 1).to_s if value =~ /\A[a-z]{2}\Z/
+      value = octaved_sounds[rand($total_notes - 1)]   if value == :unset
       value
     end
 
