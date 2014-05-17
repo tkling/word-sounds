@@ -6,6 +6,7 @@ module WordSounds
     def soundify(sentence)
       $output = UniMIDI::Output.gets
       puts ''
+
       MIDI.using($output) do
         sounds = %w(do re me fa so la ti da)
         octaved_sounds = (1..4).map { |num| sounds.map { |sound| "#{sound}#{num}" } }.flatten
@@ -20,8 +21,6 @@ module WordSounds
         total_octaves = $max_octave - min_octave + 1
 
         # extra +1 is to account for final high note => #{root note of scale}#{max_octave + 1}
-        # self.find_first wants $total_notes, that's why this is here.
-        # All of this stuff is gross and needs to change later!
         $total_notes = total_octaves * notes_per_octave + 1
 
         # for each word, find the word sound
@@ -39,7 +38,7 @@ module WordSounds
 
         words_and_sounds.each do |word_sound|
           note = whoa[word_sound[:sound]]
-          duration = possible_durations[rand(9)]
+          duration = possible_durations[rand(possible_durations.count - 1)]
           puts "note: #{note}, duration: #{duration}"
           observed_duration += duration
           play(note, duration)
