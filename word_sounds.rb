@@ -39,7 +39,7 @@ module WordSounds
         words_and_sounds.each do |word_sound|
           note = whoa[word_sound[:sound]]
           duration = possible_durations[rand(possible_durations.count - 1)]
-          puts "note: #{note}, duration: #{duration}"
+          puts "note: #{note}, duration: #{duration}, word: #{word_sound[:word]}"
           observed_duration += duration
           play(note, duration)
         end
